@@ -40,7 +40,7 @@ describe('Working with sounds', () => {
         await clickXpath('//button[@aria-label="Choose a Sound"]');
         let el = await findByXpath("//input[@placeholder='Search']");
         await el.sendKeys('meow');
-        await clickText('Ding', scope.modal); // Should close the modal
+        await clickText('Meow', scope.modal); // Should close the modal
 
         // Add a new sound
         await clickXpath('//button[@aria-label="Choose a Sound"]');
@@ -158,11 +158,11 @@ describe('Working with sounds', () => {
     test('Can copy a sound from a sprite and paste into a sound on the stage', async () => {
         await loadUri(uri);
         await clickText('Sounds');
-        await clickText('Copy', scope.soundsTab); // Copy the meow sound
+        await clickText('Copy', scope.soundsTab); // Copy the ding sound
         await clickXpath('//span[text()="Stage"]');
         await findByText('0.02', scope.soundsTab); // Original pop sound duration
         await clickText('Paste', scope.soundsTab);
-        await findByText('0.87', scope.soundsTab); // Duration of pop + meow sound
+        await findByText('0.72', scope.soundsTab); // Duration of pop + ding sound
 
         const logs = await getLogs();
         await expect(logs).toEqual([]);

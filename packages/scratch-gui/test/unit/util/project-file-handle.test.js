@@ -33,6 +33,14 @@ describe('project file handle', () => {
         expect(supportsFilePicker()).toBe(true);
     });
 
+    test('supportsFilePicker is false under browser automation', () => {
+        window.showSaveFilePicker = jest.fn();
+        window.showOpenFilePicker = jest.fn();
+        Object.defineProperty(window.navigator, 'webdriver', {configurable: true, get: () => true});
+        expect(supportsFilePicker()).toBe(false);
+        delete window.navigator.webdriver;
+    });
+
     test('the first save asks where to save, later saves write to the same file', async () => {
         const handle = makeHandle('game.sb3');
         window.showSaveFilePicker = jest.fn(() => Promise.resolve(handle));

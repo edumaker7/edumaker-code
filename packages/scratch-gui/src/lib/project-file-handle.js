@@ -13,8 +13,11 @@ const OPENABLE_FILE_TYPES = [{
 
 let currentHandle = null;
 
+// Browsers under automation (`navigator.webdriver`) can't operate the native pickers, so tests keep using the
+// <input> and download paths there.
 const supportsFilePicker = () =>
     typeof window !== 'undefined' &&
+    !window.navigator.webdriver &&
     typeof window.showSaveFilePicker === 'function' &&
     typeof window.showOpenFilePicker === 'function';
 
