@@ -156,6 +156,8 @@ const distStandaloneConfig = baseConfig.clone()
             'scratch-gui-standalone': path.join(__dirname, 'src/index-standalone.tsx')
         },
         output: {
+            // Host pages can serve the bundle from any folder, so load chunks and assets relative to the bundle.
+            publicPath: 'auto',
             path: path.resolve(__dirname, 'dist')
         }
     });

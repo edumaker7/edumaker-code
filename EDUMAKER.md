@@ -10,8 +10,9 @@ Keep these small so upstream updates merge easily.
 | Change | Files |
 | - | - |
 | Menu bar honors the `logo`/`logoAlt` props and renders an empty slot (`extraMenuSlotId`) for the host app's menu | `scratch-gui/src/components/menu-bar/`, `components/gui/gui.jsx` |
-| Default sprite is EduBot (own artwork) with a self-made "ding" sound; Scratch Cat, Gobo, Pico, Nano, Giga and Tera are filtered out of the libraries | `scratch-gui/src/lib/default-project/`, `lib/libraries/library-content.js` |
+| Default sprite is EduBot (own artwork) with a self-made "ding" sound; Scratch Cat, Gobo, Pico, Nano, Giga and Tera are filtered out of the libraries | `scratch-gui/src/lib/default-project/`, `lib/libraries/library-content.js`, robot icons in `components/action-menu/icon--sprite.svg` and `components/asset-panel/icon--add-costume-lib.svg` |
 | Korean translations for strings missing from `scratch-l10n` | `scratch-gui/src/lib/locale-overrides.js`, `reducers/locales.js` |
+| The standalone bundle and scratch-storage's fetch worker load their chunks relative to the bundle/page instead of the site root, so the editor works from a subfolder (e.g. GitHub Pages) | `scratch-gui/webpack.config.js`, `scratch-storage/webpack.config.js` |
 | Save to and open from local files with the File System Access API (save overwrites the opened file), download/upload fallback elsewhere | `scratch-gui/src/lib/project-file-handle.js`, `containers/sb3-downloader.jsx`, `lib/sb-file-uploader-hoc.jsx` |
 
 ## EduMaker packages

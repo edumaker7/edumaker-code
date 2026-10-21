@@ -32,6 +32,9 @@ const webConfig = baseConfig.clone()
                 type: 'umd2'
             },
             path: path.resolve(__dirname, 'dist', 'web'),
+            // Load the fetch worker chunk relative to the page, which serves the editor's chunks next to it, not
+            // from the site root: hosts may serve the editor from a subfolder.
+            publicPath: '',
             clean: false
         }
     });
