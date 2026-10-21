@@ -1,0 +1,32 @@
+export const messages = {
+  appName: '에듀메이커 블록코딩',
+  contents: '콘텐츠',
+  editorError: '편집기를 불러오지 못했습니다. 페이지를 새로 고쳐 주세요.',
+  noContents: '아직 콘텐츠가 없습니다.',
+  contentsLoading: '콘텐츠를 불러오는 중입니다…',
+  contentsError: '콘텐츠 목록을 불러오지 못했습니다.',
+  lessonError: '콘텐츠를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
+  starterProjectError: '시작 프로젝트를 불러오지 못했습니다.',
+  closeLesson: '콘텐츠 닫기',
+  about: '정보',
+  aboutTitle: '에듀메이커 블록코딩에 대하여',
+  aboutBasedOn:
+    '에듀메이커 블록코딩은 Scratch Foundation이 만든 Scratch 편집기를 바탕으로 만들었습니다. 편집기 소스 코드는 GNU AGPL-3.0 라이선스로 공개되어 있습니다.',
+  aboutSourceCode: '소스 코드 보기',
+  aboutLibrary:
+    '스프라이트·배경·소리 라이브러리: Scratch Foundation, 크리에이티브 커먼즈 저작자표시-동일조건변경허락(CC BY-SA) 라이선스.',
+  aboutTrademark:
+    'Scratch는 Scratch Foundation의 상표이며, 에듀메이커 블록코딩은 Scratch Foundation과 관련이 없습니다.',
+  close: '닫기',
+  step: (current: number, total: number) => `${current} / ${total}`,
+  mission: '미션',
+  hint: '힌트',
+  check: '확인하기',
+  checkPassed: '잘했어요! 다음 단계로 가 볼까요?',
+  checkFailed: '아직 미션이 끝나지 않았어요. 미션을 다시 읽어 보세요.',
+  previous: '이전',
+  next: '다음',
+  moveLeft: '패널을 왼쪽으로',
+  moveRight: '패널을 오른쪽으로',
+  storyLabel: '콘텐츠 이야기',
+} as const

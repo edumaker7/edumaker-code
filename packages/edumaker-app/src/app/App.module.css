@@ -1,0 +1,48 @@
+.layout {
+  display: flex;
+  height: 100%;
+}
+
+.panelRight {
+  flex-direction: row-reverse;
+}
+
+.editor {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  overflow: auto;
+}
+
+.fatal {
+  position: absolute;
+  top: 40%;
+  right: 0;
+  left: 0;
+  text-align: center;
+}
+
+.toast {
+  position: fixed;
+  z-index: 2000;
+  bottom: 1rem;
+  left: 50%;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--em-text);
+  color: var(--em-surface);
+  transform: translateX(-50%);
+}
+
+.toastClose {
+  border: 1px solid var(--em-surface);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--em-surface);
+  font: inherit;
+  cursor: pointer;
+}
