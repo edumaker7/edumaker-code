@@ -23,6 +23,7 @@ export const messages = {
   hint: '힌트',
   check: '확인하기',
   checkPassed: '잘했어요! 다음 단계로 가 볼까요?',
+  lessonCompleted: '잘했어요! 모든 미션을 마쳤어요.',
   checkFailed: '블록이 아직 미션과 맞지 않아요. 미션과 힌트를 보고 블록을 고쳐 보세요.',
   nextLocked: '미션을 완료하면 다음 단계로 갈 수 있어요.',
   previous: '이전',

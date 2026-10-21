@@ -92,7 +92,11 @@ export const StoryPanel = ({
             )}
             <p className={stepResult?.passed ? styles.passed : styles.failed} role="status" aria-live="polite">
               {stepResult &&
-                (stepResult.passed ? messages.checkPassed : (stepResult.feedback ?? messages.checkFailed))}
+                (stepResult.passed
+                  ? isLast
+                    ? messages.lessonCompleted
+                    : messages.checkPassed
+                  : (stepResult.feedback ?? messages.checkFailed))}
             </p>
           </section>
         )}

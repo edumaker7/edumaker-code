@@ -99,6 +99,16 @@ describe('StoryPanel', () => {
     expect(next().disabled).toBe(false)
   })
 
+  it('says the lesson is finished when the last mission passes', () => {
+    const last = {
+      ...loaded,
+      lesson: { ...loaded.lesson, steps: loaded.lesson.steps.slice(0, 2) },
+    }
+    renderPanel({ loaded: last, stepIndex: 1, onCheck: () => ({ passed: true }) })
+    fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
+    expect(screen.getByRole('status').textContent).toBe('잘했어요! 모든 미션을 마쳤어요.')
+  })
+
   it('moves to the other side and closes', () => {
     const { onSideChange, onClose } = renderPanel()
     fireEvent.click(screen.getByRole('button', { name: '패널을 오른쪽으로' }))
