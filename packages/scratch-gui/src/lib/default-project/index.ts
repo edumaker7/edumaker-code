@@ -3,10 +3,10 @@ import {TranslatorFunction} from '../../gui-config';
 
 
 import popWav from '!arraybuffer-loader!./83a9787d4cb6f3b7632b4ddfebf74367.wav?';
-import meowWav from '!arraybuffer-loader!./83c36d806dc92327b9e7049a565c6bff.wav?';
+import dingWav from '!arraybuffer-loader!./5c34b1619c54df896f6572373f8aaae8.wav?';
 import backdrop from '!raw-loader!./cd21514d0531fdffb22204e0ec5ed84a.svg?';
-import costume1 from '!raw-loader!./bcf454acf82e4504149f7ffe07081dbc.svg?';
-import costume2 from '!raw-loader!./0fb9be3e8397c983338cb71dc84d0b25.svg?';
+import costume1 from '!raw-loader!./c7c8984c25fcae35b4d9e57754e1f48d.svg?';
+import costume2 from '!raw-loader!./c5fec6e46d465112137584b2d24d965d.svg?';
 
 
 declare function require (path: 'fastestsmallesttextencoderdecoder'): {TextEncoder: typeof TextEncoder};
@@ -35,22 +35,22 @@ const defaultProject = (translator?: TranslatorFunction) => {
         dataFormat: 'WAV',
         data: new Uint8Array(popWav)
     }, {
-        id: '83c36d806dc92327b9e7049a565c6bff',
+        id: '5c34b1619c54df896f6572373f8aaae8',
         assetType: 'Sound',
         dataFormat: 'WAV',
-        data: new Uint8Array(meowWav)
+        data: new Uint8Array(dingWav)
     }, {
         id: 'cd21514d0531fdffb22204e0ec5ed84a',
         assetType: 'ImageVector',
         dataFormat: 'SVG',
         data: encoder.encode(backdrop)
     }, {
-        id: 'bcf454acf82e4504149f7ffe07081dbc',
+        id: 'c7c8984c25fcae35b4d9e57754e1f48d',
         assetType: 'ImageVector',
         dataFormat: 'SVG',
         data: encoder.encode(costume1)
     }, {
-        id: '0fb9be3e8397c983338cb71dc84d0b25',
+        id: 'c5fec6e46d465112137584b2d24d965d',
         assetType: 'ImageVector',
         dataFormat: 'SVG',
         data: encoder.encode(costume2)

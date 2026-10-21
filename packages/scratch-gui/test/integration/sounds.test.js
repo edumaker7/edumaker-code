@@ -32,7 +32,7 @@ describe('Working with sounds', () => {
         await clickText('Sounds');
 
         // Delete the sound
-        await rightClickText('Meow', scope.soundsTab);
+        await rightClickText('Ding', scope.soundsTab);
         await driver.sleep(500); // Wait a moment for context menu; only needed for local testing
         await clickText('delete', scope.contextMenu);
 
@@ -40,7 +40,7 @@ describe('Working with sounds', () => {
         await clickXpath('//button[@aria-label="Choose a Sound"]');
         let el = await findByXpath("//input[@placeholder='Search']");
         await el.sendKeys('meow');
-        await clickText('Meow', scope.modal); // Should close the modal
+        await clickText('Ding', scope.modal); // Should close the modal
 
         // Add a new sound
         await clickXpath('//button[@aria-label="Choose a Sound"]');
@@ -78,12 +78,12 @@ describe('Working with sounds', () => {
         await loadUri(uri);
         await clickText('Sounds');
 
-        await rightClickText('Meow', scope.soundsTab);
+        await rightClickText('Ding', scope.soundsTab);
         await clickText('duplicate', scope.contextMenu);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for error
 
         // Make sure the duplicated sound is named correctly.
-        await clickText('Meow2', scope.soundsTab);
+        await clickText('Ding2', scope.soundsTab);
 
         const logs = await getLogs();
         await expect(logs).toEqual([]);
@@ -137,7 +137,7 @@ describe('Working with sounds', () => {
         await loadUri(uri);
         await clickText('Sounds');
         await clickText('Copy to New', scope.soundsTab);
-        await clickText('Meow2', scope.soundsTab);
+        await clickText('Ding2', scope.soundsTab);
 
         const logs = await getLogs();
         await expect(logs).toEqual([]);
@@ -146,10 +146,10 @@ describe('Working with sounds', () => {
     test('Copy and pasting within a sound changes its duration', async () => {
         await loadUri(uri);
         await clickText('Sounds');
-        await findByText('0.85', scope.soundsTab); // Original meow sound duration
+        await findByText('0.70', scope.soundsTab); // Original ding sound duration
         await clickText('Copy', scope.soundsTab);
         await clickText('Paste', scope.soundsTab);
-        await findByText('1.70', scope.soundsTab); // Sound has doubled in duration
+        await findByText('1.40', scope.soundsTab); // Sound has doubled in duration
 
         const logs = await getLogs();
         await expect(logs).toEqual([]);
@@ -176,11 +176,11 @@ describe('Working with sounds', () => {
         // Just select any button inside the tab so the controls impact the sounds editor
         const el = await findByXpath('//button[@aria-label="Choose a Sound"]');
         await el.sendKeys(Key.chord(cmdCtrl, 'a')); // Select all
-        await findByText('0.85', scope.soundsTab); // Meow sound duration
+        await findByText('0.70', scope.soundsTab); // Ding sound duration
         await el.sendKeys(Key.DELETE);
         await findByText('0.00', scope.soundsTab); // Sound is now empty
         await el.sendKeys(Key.chord(cmdCtrl, 'z')); // undo
-        await findByText('0.85', scope.soundsTab); // Meow sound is back
+        await findByText('0.70', scope.soundsTab); // Ding sound is back
         await el.sendKeys(Key.chord(cmdCtrl, Key.SHIFT, 'z')); // redo
         await findByText('0.00', scope.soundsTab); // Sound is empty again
 
