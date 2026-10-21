@@ -1,5 +1,8 @@
 import {isRtl} from 'scratch-l10n';
-import editorMessages from 'scratch-l10n/locales/editor-msgs';
+import publishedEditorMessages from 'scratch-l10n/locales/editor-msgs';
+import {applyLocaleOverrides} from '../lib/locale-overrides';
+
+const editorMessages = applyLocaleOverrides(publishedEditorMessages);
 
 const UPDATE_LOCALES = 'scratch-gui/locales/UPDATE_LOCALES';
 const SELECT_LOCALE = 'scratch-gui/locales/SELECT_LOCALE';
@@ -25,8 +28,8 @@ const reducer = function (state, action) {
         return Object.assign({}, state, {
             isRtl: state.isRtl,
             locale: state.locale,
-            messagesByLocale: action.messagesByLocale,
-            messages: action.messagesByLocale[state.locale]
+            messagesByLocale: applyLocaleOverrides(action.messagesByLocale),
+            messages: applyLocaleOverrides(action.messagesByLocale)[state.locale]
         });
     default:
         return state;
