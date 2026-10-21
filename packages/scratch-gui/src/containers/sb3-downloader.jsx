@@ -4,6 +4,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {projectTitleInitialState} from '../reducers/project-title';
 import downloadBlob from '../lib/download-blob';
+import log from '../lib/log';
+import {saveProjectFile, supportsFilePicker} from '../lib/project-file-handle';
 /**
  * Project saver component passes a downloadProject function to its child.
  * It expects this child to be a function with the signature
@@ -30,7 +32,15 @@ class SB3Downloader extends React.Component {
             if (this.props.onSaveFinished) {
                 this.props.onSaveFinished();
             }
-            downloadBlob(this.props.projectFilename, content);
+            if (!supportsFilePicker()) {
+                downloadBlob(this.props.projectFilename, content);
+                return;
+            }
+            saveProjectFile(content, this.props.projectFilename).catch(error => {
+                // For example, permission to the file was revoked: fall back to a download.
+                log.warn(error);
+                downloadBlob(this.props.projectFilename, content);
+            });
         });
     }
     render () {

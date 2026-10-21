@@ -20,6 +20,7 @@ import {
     closeLoadingProject
 } from '../reducers/modals';
 import {getProjectTitleFromFilename} from './sb-file-uploader-utils';
+import {pickProjectFile, setProjectFileHandle, supportsFilePicker} from './project-file-handle';
 
 const messages = defineMessages({
     loadError: {
@@ -48,6 +49,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 'handleStartSelectingFileUpload',
                 'handleChange',
                 'onload',
+                'pickFileWithFilePicker',
                 'removeFileObjects'
             ]);
         }
@@ -61,7 +63,31 @@ const SBFileUploaderHOC = function (WrappedComponent) {
         }
         // step 1: this is where the upload process begins
         handleStartSelectingFileUpload () {
+            if (supportsFilePicker()) {
+                this.pickFileWithFilePicker();
+                return;
+            }
             this.createFileObjects(); // go to step 2
+        }
+        // step 2 (File System Access API): ask for a file with the browser's file picker, so that
+        // the file can later be saved back to directly. Continues at step 3 like the <input> path.
+        pickFileWithFilePicker () {
+            this.removeFileObjects();
+            this.fileReader = new FileReader();
+            this.fileReader.onload = this.onload;
+            pickProjectFile()
+                .then(picked => {
+                    if (!picked) {
+                        this.removeFileObjects();
+                        return;
+                    }
+                    this.fileHandle = picked.handle;
+                    this.handleChange({target: {files: [picked.file]}});
+                })
+                .catch(error => {
+                    log.warn(error);
+                    this.removeFileObjects();
+                });
         }
         // step 2: create a FileReader and an <input> element, and issue a
         // pseudo-click to it. That will open the file chooser dialog.
@@ -143,6 +169,8 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                             const uploadedProjectTitle = getProjectTitleFromFilename(filename);
                             this.props.onSetProjectTitle(uploadedProjectTitle);
                         }
+                        // Saving now writes back to the opened file (or, without a handle, asks again).
+                        setProjectFileHandle(this.fileHandle || null);
                         loadingSuccess = true;
                     })
                     .catch(error => {
@@ -167,6 +195,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
             this.inputElement = null;
             this.fileReader = null;
             this.fileToUpload = null;
+            this.fileHandle = null;
         }
         render () {
             const {

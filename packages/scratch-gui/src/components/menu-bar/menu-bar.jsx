@@ -72,6 +72,7 @@ import prehistoricLogo from './prehistoric-logo.svg';
 import oldtimeyLogo from './oldtimey-logo.svg';
 
 import sharedMessages from '../../lib/shared-messages';
+import {setProjectFileHandle} from '../../lib/project-file-handle';
 
 import {AccountMenuOptionsPropTypes} from '../../lib/account-menu-options';
 import AccountMenu from './account-menu.jsx';
@@ -187,6 +188,8 @@ class MenuBar extends React.Component {
             this.props.intl.formatMessage(sharedMessages.replaceProjectWarning)
         );
         if (readyToReplaceProject) {
+            // A new project must not be saved over the file the previous one came from.
+            setProjectFileHandle(null);
             this.props.onClickNew(this.props.canSave && this.props.canCreateNew);
         }
     }
