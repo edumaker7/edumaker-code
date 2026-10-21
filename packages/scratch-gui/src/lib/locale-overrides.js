@@ -24,6 +24,7 @@ const localeOverrides = {
             '마이크로비트 펌웨어를 업데이트하려면 이 링크로 가세요: <a>{microBitFirmwareLink}</a>',
         'gui.debugModal.next': '다음',
         'gui.defaultProject.ding': '딩',
+        'gui.defaultProject.eduBot': '에듀봇',
         'gui.menuBar.colorMode': '색상 모드',
         'gui.menuBar.myStuff': '내 작업실',
         'gui.menuBar.theme': '테마',

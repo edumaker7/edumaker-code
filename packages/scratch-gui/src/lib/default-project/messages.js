@@ -6,6 +6,11 @@ const messages = defineMessages({
         description: 'Name for the ding sound',
         id: 'gui.defaultProject.ding'
     },
+    eduBot: {
+        defaultMessage: 'EduBot',
+        description: 'Name for the default sprite',
+        id: 'gui.defaultProject.eduBot'
+    },
     variable: {
         defaultMessage: 'my variable',
         description: 'Name for the default variable',
