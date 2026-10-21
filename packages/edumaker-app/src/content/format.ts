@@ -15,11 +15,16 @@ export type CheckTarget = 'any' | 'stage' | 'sprite' | { sprite: string }
 
 export type Check =
   /** At least `minCount` blocks with this opcode exist. */
-  | { type: 'hasBlock'; opcode: string; minCount: number; target: CheckTarget }
-  /** Some script that starts with `hat` contains a block with `opcode`. */
-  | { type: 'hasBlockInScript'; hat: string; opcode: string; target: CheckTarget }
-  /** The project has at least `minCount` sprites. */
-  | { type: 'hasSprites'; minCount: number }
+  (
+    | { type: 'hasBlock'; opcode: string; minCount: number; target: CheckTarget }
+    /** Some script that starts with `hat` contains a block with `opcode`. */
+    | { type: 'hasBlockInScript'; hat: string; opcode: string; target: CheckTarget }
+    /** The project has at least `minCount` sprites. */
+    | { type: 'hasSprites'; minCount: number }
+  ) & {
+    /** Shown to the student when this check fails, e.g. what to fix. */
+    feedback?: string
+  }
 
 export interface LessonStep {
   id: string
@@ -103,8 +108,7 @@ const parseTarget = (value: unknown, path: string): CheckTarget => {
   return { sprite: asString(raw.sprite, `${path}.sprite`) }
 }
 
-const parseCheck = (value: unknown, path: string): Check => {
-  const raw = asObject(value, path)
+const parseCheckCondition = (raw: Raw, path: string): Check => {
   switch (raw.type) {
     case 'hasBlock':
       return {
@@ -125,6 +129,12 @@ const parseCheck = (value: unknown, path: string): Check => {
     default:
       return fail(`${path}.type`, `unknown check type ${JSON.stringify(raw.type)}`)
   }
+}
+
+const parseCheck = (value: unknown, path: string): Check => {
+  const raw = asObject(value, path)
+  const feedback = optionalString(raw.feedback, `${path}.feedback`)
+  return { ...parseCheckCondition(raw, path), ...(feedback === undefined ? {} : { feedback }) }
 }
 
 const uniqueIds = <T extends { id: string }>(items: T[], path: string): T[] => {

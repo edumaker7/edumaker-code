@@ -19,6 +19,7 @@ const loaded = {
         hint: '이벤트 블록 아래에 붙여요.',
         checks: [{ type: 'hasSprites' }],
       },
+      { id: 'outro', title: '마무리' },
     ],
   }),
 }
@@ -28,7 +29,7 @@ const renderPanel = (props: Partial<StoryPanelProps> = {}) => {
     onStepChange: vi.fn(),
     onSideChange: vi.fn(),
     onClose: vi.fn(),
-    onCheck: vi.fn(() => false),
+    onCheck: vi.fn<StoryPanelProps['onCheck']>(() => ({ passed: false })),
   }
   const result = render(<StoryPanel loaded={loaded} stepIndex={0} side="left" {...handlers} {...props} />)
   return { ...result, ...handlers }
@@ -38,7 +39,7 @@ describe('StoryPanel', () => {
   it('shows the story of the current step', () => {
     renderPanel()
     expect(screen.getByRole('heading', { name: '수업' })).toBeTruthy()
-    expect(screen.getByText('1 / 2')).toBeTruthy()
+    expect(screen.getByText('1 / 3')).toBeTruthy()
     expect(screen.getByRole('heading', { name: '시작' })).toBeTruthy()
     expect(screen.getByText('둘째 문단')).toBeTruthy()
     expect(screen.getByRole('presentation').getAttribute('src')).toBe(
@@ -54,28 +55,48 @@ describe('StoryPanel', () => {
     expect(onStepChange).toHaveBeenCalledWith(1)
   })
 
-  it('checks the mission and shows the result', () => {
-    const { onCheck, rerender } = renderPanel({ stepIndex: 1 })
-    expect(screen.getByRole<HTMLButtonElement>('button', { name: '다음' }).disabled).toBe(true)
+  it('checks the mission and explains what to fix', () => {
+    const { onCheck } = renderPanel({ stepIndex: 1 })
     fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
-    expect(screen.getByRole('status').textContent).toBe('아직 미션이 끝나지 않았어요. 미션을 다시 읽어 보세요.')
+    expect(screen.getByRole('status').textContent).toBe(
+      '블록이 아직 미션과 맞지 않아요. 미션과 힌트를 보고 블록을 고쳐 보세요.',
+    )
 
-    onCheck.mockReturnValue(true)
+    onCheck.mockReturnValue({ passed: false, feedback: '말하기 블록이 떨어져 있어요.' })
+    fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
+    expect(screen.getByRole('status').textContent).toBe('말하기 블록이 떨어져 있어요.')
+
+    onCheck.mockReturnValue({ passed: true })
     fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
     expect(screen.getByRole('status').textContent).toBe('잘했어요! 다음 단계로 가 볼까요?')
+  })
 
-    rerender(
-      <StoryPanel
-        loaded={loaded}
-        stepIndex={0}
-        side="left"
-        onStepChange={vi.fn()}
-        onSideChange={vi.fn()}
-        onClose={vi.fn()}
-        onCheck={onCheck}
-      />,
-    )
+  it('unlocks the next step once the mission passes, and remembers it', () => {
+    const { onCheck, rerender } = renderPanel({ stepIndex: 1 })
+    const next = () => screen.getByRole<HTMLButtonElement>('button', { name: '다음' })
+    expect(next().disabled).toBe(true)
+    expect(screen.getByText('미션을 완료하면 다음 단계로 갈 수 있어요.')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
+    expect(next().disabled).toBe(true)
+
+    onCheck.mockReturnValue({ passed: true })
+    fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
+    expect(next().disabled).toBe(false)
+    expect(screen.queryByText('미션을 완료하면 다음 단계로 갈 수 있어요.')).toBeNull()
+
+    const props = {
+      loaded,
+      side: 'left',
+      onStepChange: vi.fn(),
+      onSideChange: vi.fn(),
+      onClose: vi.fn(),
+      onCheck,
+    } as const
+    rerender(<StoryPanel {...props} stepIndex={0} />)
     expect(screen.queryByRole('status')).toBeNull()
+    rerender(<StoryPanel {...props} stepIndex={1} />)
+    expect(next().disabled).toBe(false)
   })
 
   it('moves to the other side and closes', () => {

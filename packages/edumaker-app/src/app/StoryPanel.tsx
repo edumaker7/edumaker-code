@@ -12,7 +12,13 @@ export interface StoryPanelProps {
   onSideChange: (side: PanelSide) => void
   onClose: () => void
   /** Checks the current step's mission against the project. */
-  onCheck: () => boolean
+  onCheck: () => CheckOutcome
+}
+
+export interface CheckOutcome {
+  passed: boolean
+  /** What to fix, from the first failed check. */
+  feedback?: string
 }
 
 export const StoryPanel = ({
@@ -26,9 +32,17 @@ export const StoryPanel = ({
 }: StoryPanelProps) => {
   const { lesson } = loaded
   const step = lesson.steps[stepIndex]
-  const [result, setResult] = useState<{ stepId: string; passed: boolean } | null>(null)
-  const stepResult = result?.stepId === step.id ? result.passed : null
+  const [result, setResult] = useState<(CheckOutcome & { stepId: string }) | null>(null)
+  const [passedSteps, setPassedSteps] = useState<ReadonlySet<string>>(new Set())
+  const stepResult = result?.stepId === step.id ? result : null
   const isLast = stepIndex === lesson.steps.length - 1
+  const locked = step.checks.length > 0 && !passedSteps.has(step.id)
+
+  const check = () => {
+    const outcome = onCheck()
+    setResult({ ...outcome, stepId: step.id })
+    if (outcome.passed) setPassedSteps(new Set(passedSteps).add(step.id))
+  }
 
   return (
     <aside className={styles.panel} data-side={side} aria-label={messages.storyLabel}>
@@ -72,22 +86,20 @@ export const StoryPanel = ({
               </details>
             )}
             {step.checks.length > 0 && (
-              <button
-                type="button"
-                className={styles.checkButton}
-                onClick={() => setResult({ stepId: step.id, passed: onCheck() })}
-              >
+              <button type="button" className={styles.checkButton} onClick={check}>
                 {messages.check}
               </button>
             )}
-            <p className={stepResult ? styles.passed : styles.failed} role="status" aria-live="polite">
-              {stepResult === null ? '' : stepResult ? messages.checkPassed : messages.checkFailed}
+            <p className={stepResult?.passed ? styles.passed : styles.failed} role="status" aria-live="polite">
+              {stepResult &&
+                (stepResult.passed ? messages.checkPassed : (stepResult.feedback ?? messages.checkFailed))}
             </p>
           </section>
         )}
       </div>
 
       <footer className={styles.footer}>
+        {locked && !isLast && <p className={styles.lockedNote}>{messages.nextLocked}</p>}
         <button
           type="button"
           className={styles.navButton}
@@ -99,7 +111,7 @@ export const StoryPanel = ({
         <button
           type="button"
           className={styles.navButton}
-          disabled={isLast}
+          disabled={isLast || locked}
           onClick={() => onStepChange(stepIndex + 1)}
         >
           {messages.next}

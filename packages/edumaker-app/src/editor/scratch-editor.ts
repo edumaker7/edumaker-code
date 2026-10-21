@@ -13,7 +13,7 @@ interface StandaloneRoot {
 
 interface EditorStateInstance {
   store: {
-    getState(): { scratchGui: { vm: ScratchVm } }
+    getState(): { scratchGui: { vm: ScratchVm; stageSize: { stageSize: StageSize } } }
     dispatch(action: unknown): void
   }
 }
@@ -25,7 +25,11 @@ interface ScratchGuiGlobal {
   setAppElement(element: HTMLElement): void
   defaultProjectId: string
   setProjectId(id: string): unknown
+  setStageSize(stageSize: StageSize): unknown
 }
+
+/** The editor's stage size modes (the buttons next to the stage). */
+export type StageSize = 'large' | 'largeConstrained' | 'small'
 
 declare global {
   interface Window {
@@ -46,6 +50,8 @@ export interface EditorOptions {
 
 export interface EditorHandle {
   getVm(): ScratchVm
+  getStageSize(): StageSize
+  setStageSize(stageSize: StageSize): void
   unmount(): void
 }
 
@@ -66,6 +72,8 @@ export const mountEditor = (container: HTMLElement, options: EditorOptions): Edi
   state.store.dispatch(gui.setProjectId(gui.defaultProjectId))
   return {
     getVm: () => state.store.getState().scratchGui.vm,
+    getStageSize: () => state.store.getState().scratchGui.stageSize.stageSize,
+    setStageSize: (stageSize) => state.store.dispatch(gui.setStageSize(stageSize)),
     unmount: () => root.unmount(),
   }
 }

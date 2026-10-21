@@ -33,7 +33,7 @@ describe('parseLesson', () => {
           checks: [
             { type: 'hasBlock', opcode: 'motion_movesteps' },
             { type: 'hasBlockInScript', hat: 'event_whenflagclicked', opcode: 'looks_say', target: { sprite: 'A' } },
-            { type: 'hasSprites', minCount: 2 },
+            { type: 'hasSprites', minCount: 2, feedback: '친구를 추가해요' },
           ],
         },
       ],
@@ -42,7 +42,7 @@ describe('parseLesson', () => {
     expect(lesson.steps[0].checks).toEqual([
       { type: 'hasBlock', opcode: 'motion_movesteps', minCount: 1, target: 'any' },
       { type: 'hasBlockInScript', hat: 'event_whenflagclicked', opcode: 'looks_say', target: { sprite: 'A' } },
-      { type: 'hasSprites', minCount: 2 },
+      { type: 'hasSprites', minCount: 2, feedback: '친구를 추가해요' },
     ])
   })
 

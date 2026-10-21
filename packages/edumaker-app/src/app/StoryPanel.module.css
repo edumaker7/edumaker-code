@@ -152,7 +152,17 @@
 
 .footer {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   justify-content: space-between;
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--em-border);
+}
+
+.lockedNote {
+  width: 100%;
+  margin: 0;
+  color: var(--em-muted);
+  font-size: 0.85rem;
+  text-align: right;
 }

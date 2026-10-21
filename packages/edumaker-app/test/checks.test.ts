@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { passesCheck, passesChecks, summarizeTargets, type VmBlock, type VmTarget } from '../src/content/checks'
+import { findFailedCheck, passesCheck, summarizeTargets, type VmBlock, type VmTarget } from '../src/content/checks'
 
 const block = (opcode: string, extra: Partial<VmBlock> = {}): VmBlock => ({
   opcode,
@@ -77,14 +77,12 @@ describe('mission checks', () => {
     expect(passesCheck(summary, { type: 'hasSprites', minCount: 3 })).toBe(false)
   })
 
-  it('needs every check to pass', () => {
-    expect(passesChecks(summary, [])).toBe(true)
+  it('finds the first failed check', () => {
+    expect(findFailedCheck(summary, [])).toBeUndefined()
+    const tooMany = { type: 'hasSprites', minCount: 3, feedback: '친구를 더 만들어요' } as const
     expect(
-      passesChecks(summary, [
-        { type: 'hasSprites', minCount: 2 },
-        { type: 'hasSprites', minCount: 3 },
-      ]),
-    ).toBe(false)
+      findFailedCheck(summary, [{ type: 'hasSprites', minCount: 2 }, tooMany, { type: 'hasSprites', minCount: 4 }]),
+    ).toBe(tooMany)
   })
 
   it('does not loop on malformed block links', () => {

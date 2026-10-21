@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { passesChecks, summarizeTargets } from '../content/checks'
+import { findFailedCheck, summarizeTargets } from '../content/checks'
 import type { Catalog, CatalogEntry, PanelSide } from '../content/format'
 import { loadCatalog, loadLesson, resolveLessonUrl, type LoadedLesson } from '../content/loader'
 import { loadEditorBundle, mountEditor, type EditorHandle } from '../editor/scratch-editor'
@@ -9,7 +9,7 @@ import { messages } from '../messages'
 import { AboutDialog } from './AboutDialog'
 import styles from './App.module.css'
 import { ContentMenu } from './ContentMenu'
-import { StoryPanel } from './StoryPanel'
+import { StoryPanel, type CheckOutcome } from './StoryPanel'
 
 export const MENU_SLOT_ID = 'em-menu'
 
@@ -103,12 +103,29 @@ export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
     [contentBaseUrl, fetcher],
   )
 
-  const checkStep = useCallback((): boolean => {
+  const checkStep = useCallback((): CheckOutcome => {
     const editor = editorRef.current
-    if (!editor || !lesson) return false
+    if (!editor || !lesson) return { passed: false }
     const step = lesson.loaded.lesson.steps[lesson.stepIndex]
-    return passesChecks(summarizeTargets(editor.getVm().runtime.targets), step.checks)
+    const failed = findFailedCheck(summarizeTargets(editor.getVm().runtime.targets), step.checks)
+    return failed ? { passed: false, feedback: failed.feedback } : { passed: true }
   }, [lesson])
+
+  // The panel takes space from the editor: use the small stage meanwhile, and restore the student's choice after.
+  const lessonOpen = lesson !== null
+  useEffect(() => {
+    const editor = editorRef.current
+    if (!lessonOpen || !editor) return
+    const stageSize = editor.getStageSize()
+    editor.setStageSize('small')
+    return () => editor.setStageSize(stageSize)
+  }, [lessonOpen])
+
+  // The editor measures its layout (block palette, delete area, stage) only on window resize events.
+  const panelSide = lesson?.side
+  useEffect(() => {
+    window.dispatchEvent(new Event('resize'))
+  }, [panelSide])
 
   const layoutClass = [styles.layout, lesson?.side === 'right' ? styles.panelRight : ''].join(' ')
 

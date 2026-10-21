@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { App } from '../src/app/App'
 import type { VmTarget } from '../src/content/checks'
+import type { StageSize } from '../src/editor/scratch-editor'
 
 const sprite = (name: string, opcodes: string[]): VmTarget => ({
   isStage: false,
@@ -21,14 +22,18 @@ const vm = {
   loadProject: vi.fn(() => Promise.resolve()),
 }
 
-const dispatch = vi.fn()
+let stageSize: StageSize = 'large'
+const dispatch = vi.fn((action: { type: string; stageSize?: StageSize }) => {
+  if (action.type === 'SET_STAGE_SIZE' && action.stageSize) stageSize = action.stageSize
+})
 const renderProps = vi.fn()
 
 beforeEach(() => {
+  stageSize = 'largeConstrained'
   vm.runtime.targets = [sprite('EduBot', [])]
   window.GUI = {
     EditorState: class {
-      store = { getState: () => ({ scratchGui: { vm } }), dispatch }
+      store = { getState: () => ({ scratchGui: { vm, stageSize: { stageSize } } }), dispatch }
     },
     createStandaloneRoot: (_state, container) => ({
       render: (props) => {
@@ -44,6 +49,7 @@ beforeEach(() => {
     setAppElement: vi.fn(),
     defaultProjectId: '0',
     setProjectId: (id: string) => ({ type: 'SET_PROJECT_ID', id }),
+    setStageSize: (size: StageSize) => ({ type: 'SET_STAGE_SIZE', stageSize: size }),
   }
 })
 
@@ -69,7 +75,14 @@ const lesson = {
       id: 'greet',
       title: '인사하기',
       mission: '말하기 블록을 붙이세요.',
-      checks: [{ type: 'hasBlockInScript', hat: 'event_whenflagclicked', opcode: 'looks_sayforsecs' }],
+      checks: [
+        {
+          type: 'hasBlockInScript',
+          hat: 'event_whenflagclicked',
+          opcode: 'looks_sayforsecs',
+          feedback: '깃발 블록 아래에 말하기 블록을 붙였나요?',
+        },
+      ],
     },
   ],
 }
@@ -98,6 +111,8 @@ describe('App', () => {
   it('opens a lesson from the content menu and checks its mission', async () => {
     const starter = new ArrayBuffer(4)
     const fetcher = fakeFetch({ 'index.json': catalog, 'l1.json': lesson, 'starter.sb3': starter })
+    const resized = vi.fn()
+    window.addEventListener('resize', resized)
     render(<App contentBaseUrl={base} fetcher={fetcher} />)
 
     fireEvent.click(await screen.findByRole('button', { name: '콘텐츠' }))
@@ -105,17 +120,24 @@ describe('App', () => {
 
     const panel = await screen.findByRole('complementary', { name: '콘텐츠 이야기' })
     expect(panel.getAttribute('data-side')).toBe('right')
+    // The editor re-measures its layout when the panel takes up space, and uses the small stage.
+    expect(resized).toHaveBeenCalled()
+    expect(stageSize).toBe('small')
     await waitFor(() => expect(vm.loadProject).toHaveBeenCalledWith(starter))
 
     fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
-    expect(screen.getByRole('status').textContent).toContain('아직')
+    expect(screen.getByRole('status').textContent).toBe('깃발 블록 아래에 말하기 블록을 붙였나요?')
 
     vm.runtime.targets = [sprite('EduBot', ['event_whenflagclicked', 'looks_sayforsecs'])]
     fireEvent.click(screen.getByRole('button', { name: '확인하기' }))
     expect(screen.getByRole('status').textContent).toContain('잘했어요')
 
+    resized.mockClear()
     fireEvent.click(screen.getByRole('button', { name: '콘텐츠 닫기' }))
     expect(screen.queryByRole('complementary')).toBeNull()
+    expect(resized).toHaveBeenCalled()
+    expect(stageSize).toBe('largeConstrained')
+    window.removeEventListener('resize', resized)
   })
 
   it('reports content that cannot be loaded', async () => {

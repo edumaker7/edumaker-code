@@ -86,10 +86,10 @@ export const passesCheck = (summary: ProjectSummary, check: Check): boolean => {
 }
 
 /**
- * Checks a project against all of a step's checks.
+ * Checks a project against a step's checks, in order.
  * @param summary - The project, from `summarizeTargets`.
  * @param checks - The step's checks.
- * @returns Whether every check passes; a step without checks always passes.
+ * @returns The first check that fails, or undefined when every check passes (or there are none).
  */
-export const passesChecks = (summary: ProjectSummary, checks: readonly Check[]): boolean =>
-  checks.every((check) => passesCheck(summary, check))
+export const findFailedCheck = (summary: ProjectSummary, checks: readonly Check[]): Check | undefined =>
+  checks.find((check) => !passesCheck(summary, check))

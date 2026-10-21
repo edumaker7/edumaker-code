@@ -43,11 +43,14 @@ npm test           # 린트 + Vitest
     "checks": [                         // 모두 통과해야 성공
       { "type": "hasBlock", "opcode": "motion_movesteps", "minCount": 1, "target": "any" },
       { "type": "hasBlockInScript", "hat": "event_whenflagclicked", "opcode": "looks_sayforsecs" },
-      { "type": "hasSprites", "minCount": 2 }
+      { "type": "hasSprites", "minCount": 2, "feedback": "스프라이트를 하나 더 추가해 보세요." }
     ]
   }]
 }
 ```
+
+미션이 있는 단계는 확인을 통과해야 "다음"으로 갈 수 있다. 확인에 실패하면 처음 실패한 검사의 `feedback`(없으면 기본 문구)을
+보여 준다.
 
 `target`은 `any`(기본) | `stage` | `sprite` | `{ "sprite": "이름" }`. opcode는 Scratch 블록 opcode다.
 형식을 바꾸면 `CONTENT_FORMAT_VERSION`을 올린다. `test/format.test.ts`가 공개 샘플을 검증한다.
