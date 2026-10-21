@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "id": "sample-digital-citizen",
+  "title": "[시험용] 친절한 인사 로봇",
+  "subtitle": "콘텐츠 형식을 시험하기 위한 공개 샘플",
+  "panelSide": "left",
+  "steps": [
+    {
+      "id": "intro",
+      "title": "온라인에서도 친절하게",
+      "body": [
+        "얼굴이 보이지 않는 온라인에서도 상대방은 우리와 똑같은 사람이에요.",
+        "오늘은 에듀봇이 친구들에게 친절하게 인사하도록 코딩해 봅시다."
+      ]
+    },
+    {
+      "id": "greet",
+      "title": "인사하기",
+      "body": ["깃발을 클릭하면 에듀봇이 따뜻한 인사말을 하도록 만들어 볼까요?"],
+      "mission": "[이벤트]의 '깃발을 클릭했을 때' 블록 아래에 [형태]의 '말하기' 블록(…초 동안 말하기)을 붙이세요.",
+      "hint": "블록을 끌어다 '깃발을 클릭했을 때' 블록 바로 아래에 가까이 놓으면 딸깍 붙어요.",
+      "checks": [{ "type": "hasBlockInScript", "hat": "event_whenflagclicked", "opcode": "looks_sayforsecs" }]
+    },
+    {
+      "id": "kind-words",
+      "title": "고운 말 쓰기",
+      "body": [
+        "친구가 에듀봇을 클릭하면 응원의 말을 해 주면 좋겠어요.",
+        "어떤 말을 들으면 기분이 좋아지는지 생각해 보세요."
+      ],
+      "mission": "'이 스프라이트를 클릭했을 때' 블록 아래에 응원의 말을 하는 '말하기' 블록을 붙이세요.",
+      "checks": [{ "type": "hasBlockInScript", "hat": "event_whenthisspriteclicked", "opcode": "looks_sayforsecs" }]
+    },
+    {
+      "id": "friend",
+      "title": "친구 초대하기",
+      "body": ["에듀봇에게 함께 인사할 친구를 만들어 줍시다."],
+      "mission": "스프라이트를 하나 더 추가하세요.",
+      "hint": "오른쪽 아래 '스프라이트 고르기' 버튼으로 새 스프라이트를 고르거나 직접 그릴 수 있어요.",
+      "checks": [{ "type": "hasSprites", "minCount": 2 }]
+    }
+  ]
+}
