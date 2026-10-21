@@ -21,11 +21,20 @@ Keep these small so upstream updates merge easily.
 Lesson content is data, not code. Only a public test sample lives here (`packages/edumaker-app/public/contents`);
 real lessons are kept in a separate private repository and served from `VITE_CONTENT_BASE_URL`.
 
+## GitHub Actions
+
+Workflows meant for the Scratch organization (npm publishing, translation sync, contributor signatures) are removed.
+
+- `ci.yml`: builds and tests changed packages, then publishes `packages/edumaker-app/dist` to the `gh-pages` branch
+  under a folder per branch (`develop/`, `claude_my-branch/`, …). Pull requests from forks are not published.
+- `ghpages-cleanup.yml`: weekly, removes branch folders that haven't been updated for a month (never `develop/`).
+
+With GitHub Pages set to deploy from the `gh-pages` branch, the app is at
+`https://<owner>.github.io/<repo>/<branch folder>/`.
+
 ## Open items
 
 - Sprite, backdrop and sound libraries still load from the Scratch CDN (`cdn.assets.scratch.mit.edu`); those assets
   are CC BY-SA (Scratch Foundation). Self-hosting needs a decision.
-- Upstream workflows meant for the Scratch organization (`update-i18n`, `ghpages-cleanup`, `signature-assistant`,
-  `publish`) should stay disabled in this fork.
 - Trademark and AGPL scope questions are listed for legal review in the EduMaker prototype repository
   (`docs/spike-scratch-editor.md` in `edumaker7/edumaker-blocks`).

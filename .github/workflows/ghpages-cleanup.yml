@@ -28,6 +28,7 @@ jobs:
         run: |
           for dir in */; do
             [ -L "${dir%/}" ] && continue  # skip symlinks (trim trailing slash for test)
+            [ "$dir" = "develop/" ] && continue  # the main site stays even when develop is quiet
             if [ -z "$(git log -n 1 --since "1 month ago" -- "$dir")" ]; then
               echo "Removing stale directory: $dir"
               git rm --quiet -r "$dir"

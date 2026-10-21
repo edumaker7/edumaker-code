@@ -112,6 +112,8 @@ jobs:
         ) &&
         (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
       }}
+    permissions:
+      contents: write
     uses: ./.github/workflows/deploy-playground-preview.yml
     with:
       # even `develop` should be published to a subdirectory
