@@ -90,6 +90,12 @@ jobs:
     name: Test
     needs: build
     if: ${{ needs.build.outputs.any-workspace == 'true' && needs.build.outputs.packages != '[]' }}
+    # The called workflow publishes test results as checks and PR comments.
+    permissions:
+      checks: write
+      contents: read
+      issues: read
+      pull-requests: write
     uses: ./.github/workflows/test-packages.yml
     with:
       packages: ${{ needs.build.outputs.packages }}
@@ -112,6 +118,8 @@ jobs:
         ) &&
         (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
       }}
+    permissions:
+      contents: write
     uses: ./.github/workflows/deploy-playground-preview.yml
     with:
       # even `develop` should be published to a subdirectory

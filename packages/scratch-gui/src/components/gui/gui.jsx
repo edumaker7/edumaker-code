@@ -159,6 +159,8 @@ const GUIComponent = props => {
         isTotallyNormal,
         loading,
         logo,
+        logoAlt,
+        extraMenuSlotId,
         manuallySaveThumbnails,
         onSetManualThumbnail,
         onSetManualThumbnailButtonClick,
@@ -355,7 +357,9 @@ const GUIComponent = props => {
                             hasActiveMembership={hasActiveMembership}
                             isShared={isShared}
                             isTotallyNormal={isTotallyNormal}
+                            extraMenuSlotId={extraMenuSlotId}
                             logo={logo}
+                            logoAlt={logoAlt}
                             renderLogin={renderLogin}
                             showComingSoon={showComingSoon}
                             onClickAbout={onClickAbout}
@@ -608,6 +612,7 @@ GUIComponent.propTypes = {
     costumeLibraryVisible: PropTypes.bool,
     costumesTabVisible: PropTypes.bool,
     debugModalVisible: PropTypes.bool,
+    extraMenuSlotId: PropTypes.string,
     hasActiveMembership: PropTypes.bool,
     onDebugModalClose: PropTypes.func,
     onTutorialSelect: PropTypes.func,
@@ -621,6 +626,7 @@ GUIComponent.propTypes = {
     isTotallyNormal: PropTypes.bool,
     loading: PropTypes.bool,
     logo: PropTypes.string,
+    logoAlt: PropTypes.string,
     manuallySaveThumbnails: PropTypes.bool,
     onSetManualThumbnail: PropTypes.func,
     onSetManualThumbnailButtonClick: PropTypes.func,

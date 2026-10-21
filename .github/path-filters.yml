@@ -52,3 +52,6 @@ scratch-gui:
 scratch-media-lib-scripts:
   - *global
   - "packages/scratch-media-lib-scripts/**"
+edumaker-app:
+  - *global
+  - "packages/edumaker-app/**"

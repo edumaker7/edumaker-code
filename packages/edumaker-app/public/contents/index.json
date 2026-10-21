@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "lessons": [
+    {
+      "id": "sample-digital-citizen",
+      "title": "[시험용] 친절한 인사 로봇",
+      "category": "디지털시민교육 (시험용 샘플)",
+      "summary": "콘텐츠 형식을 시험하기 위한 공개 샘플입니다.",
+      "path": "sample/digital-citizen.json"
+    }
+  ]
+}

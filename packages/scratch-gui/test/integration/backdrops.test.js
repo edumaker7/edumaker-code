@@ -38,7 +38,7 @@ describe('Working with backdrops', () => {
         await clickText('Blue Sky'); // Adds the backdrop
 
         // Make sure the sprite is still selected, and that the tab has not changed
-        await clickText('Meow', scope.soundsTab);
+        await clickText('Ding', scope.soundsTab);
 
         // Make sure the backdrop was actually added by going to the backdrops tab
         await clickXpath('//span[text()="Stage"]');
@@ -84,7 +84,7 @@ describe('Working with backdrops', () => {
         await clickXpath(surpriseXpath);
 
         // Make sure the sprite is still selected, and that the tab has not changed
-        await clickText('Meow', scope.soundsTab);
+        await clickText('Ding', scope.soundsTab);
 
         const logs = await getLogs();
         await expect(logs).toEqual([]);

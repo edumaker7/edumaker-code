@@ -1,0 +1,26 @@
+:root {
+  --em-text: #3a3a3a;
+  --em-muted: #575e75;
+  --em-border: #d9e3f2;
+  --em-surface: #ffffff;
+  --em-surface-alt: #e9f1fc;
+  --em-accent: #4c97ff;
+  --em-accent-strong: #2e6fd1;
+  --em-success: #0b7a3e;
+  --em-warning: #9a4b00;
+  --em-mission: #fff6e0;
+  --em-focus: #ffab19;
+  --em-menu-text: #ffffff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: var(--em-text);
+}

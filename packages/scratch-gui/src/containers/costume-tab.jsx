@@ -35,7 +35,7 @@ import paintIcon from '../components/action-menu/icon--paint.svg';
 import surpriseIcon from '../components/action-menu/icon--surprise.svg';
 import searchIcon from '../components/action-menu/icon--search.svg';
 
-import costumeLibraryContent from '../lib/libraries/costumes.json';
+import {costumeLibraryContent} from '../lib/libraries/library-content.js';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import {ModalFocusContext} from '../contexts/modal-focus-context.jsx';
 import {costumeShape} from '../lib/assets-prop-types.js';

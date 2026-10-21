@@ -1,0 +1,45 @@
+.dialog {
+  max-width: 32rem;
+  padding: 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 25%);
+  color: var(--em-text);
+  line-height: 1.6;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+.dialog a {
+  color: var(--em-accent-strong);
+  font-weight: bold;
+}
+
+.title {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.small {
+  color: var(--em-muted);
+  font-size: 0.85rem;
+}
+
+.close {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--em-accent-strong);
+  color: var(--em-surface);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:focus-visible,
+.dialog a:focus-visible {
+  outline: 3px solid var(--em-focus);
+  outline-offset: 2px;
+}

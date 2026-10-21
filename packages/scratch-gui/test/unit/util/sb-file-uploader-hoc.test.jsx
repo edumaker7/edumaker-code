@@ -8,6 +8,7 @@ import VM from '@scratch/scratch-vm';
 
 import SBFileUploaderHOC from '../../../src/lib/sb-file-uploader-hoc.jsx';
 import {IntlProvider} from 'react-intl';
+import {fireEvent, waitFor} from '@testing-library/react';
 
 describe('SBFileUploaderHOC', () => {
     const mockStore = configureStore();
@@ -97,5 +98,45 @@ describe('SBFileUploaderHOC', () => {
             </IntlProvider>
         );
         expect(mockedCancelFileUpload).toHaveBeenCalled();
+    });
+
+    describe('with the File System Access API', () => {
+        const handle = {name: 'story.sb3', getFile: () => Promise.resolve(new File(['data'], 'story.sb3'))};
+
+        beforeEach(() => {
+            window.showSaveFilePicker = jest.fn();
+            window.showOpenFilePicker = jest.fn(() => Promise.resolve([handle]));
+            window.confirm = jest.fn(() => true);
+        });
+
+        afterEach(() => {
+            delete window.showSaveFilePicker;
+            delete window.showOpenFilePicker;
+            delete window.confirm;
+        });
+
+        test('opens the browser file picker instead of a file input', async () => {
+            const Component = ({onStartSelectingFileUpload}) => ( // eslint-disable-line react/prop-types
+                <button onClick={onStartSelectingFileUpload}>{'open'}</button>
+            );
+            const WrappedComponent = SBFileUploaderHOC(Component);
+            const {getByText} = renderWithIntl(
+                <WrappedComponent
+                    projectChanged
+                    canSave={false}
+                    closeFileMenu={jest.fn()}
+                    store={store}
+                    userOwnsProject={false}
+                    vm={vm}
+                    onLoadingFinished={jest.fn()}
+                    onLoadingStarted={jest.fn()}
+                    onUpdateProjectTitle={jest.fn()}
+                />
+            );
+            fireEvent.click(getByText('open'));
+            await waitFor(() => expect(store.getActions().length).toBeGreaterThan(0));
+            expect(window.showOpenFilePicker).toHaveBeenCalledTimes(1);
+            expect(document.querySelector('input[type="file"]')).toBeNull();
+        });
     });
 });

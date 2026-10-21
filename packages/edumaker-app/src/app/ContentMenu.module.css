@@ -1,0 +1,92 @@
+.root {
+  position: relative;
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.menuButton {
+  height: 100%;
+  padding: 0 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--em-menu-text);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menuButton:hover,
+.menuButton[aria-expanded='true'] {
+  background: rgb(0 0 0 / 15%);
+}
+
+.menuButton:focus-visible,
+.item:focus-visible {
+  outline: 3px solid var(--em-focus);
+  outline-offset: -3px;
+}
+
+.dropdown {
+  position: absolute;
+  z-index: 1000;
+  top: 100%;
+  right: 0;
+  width: 20rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+  border: 1px solid var(--em-border);
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: var(--em-surface);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  color: var(--em-text);
+}
+
+.note {
+  margin: 0.5rem 1rem;
+  color: var(--em-muted);
+}
+
+.group + .group {
+  border-top: 1px solid var(--em-border);
+}
+
+.category {
+  margin: 0.5rem 1rem 0.25rem;
+  color: var(--em-muted);
+  font-size: 0.8rem;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--em-surface-alt);
+}
+
+.itemTitle {
+  font-weight: bold;
+}
+
+.itemSummary {
+  color: var(--em-muted);
+  font-size: 0.85rem;
+}

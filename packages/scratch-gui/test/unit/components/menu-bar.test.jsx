@@ -76,4 +76,34 @@ describe('MenuBar Component', () => {
             expect(onClickAbout).toHaveBeenCalledTimes(0);
         });
     });
+
+    describe('logo', () => {
+        test('uses the logo and alt text passed in', () => {
+            const {container} = renderWithIntl(getComponent({logo: 'custom-logo.svg', logoAlt: 'EduMaker'}));
+            const img = container.querySelector('#logo_img');
+            expect(img.getAttribute('src')).toBe('custom-logo.svg');
+            expect(img.getAttribute('alt')).toBe('EduMaker');
+        });
+
+        test('falls back to the Scratch logo when no logo is passed in', () => {
+            const {container} = renderWithIntl(getComponent());
+            const img = container.querySelector('#logo_img');
+            expect(img.getAttribute('src')).toBeTruthy();
+            expect(img.getAttribute('alt')).toBe('Scratch');
+        });
+    });
+
+    describe('extra menu slot', () => {
+        test('renders an empty slot with the given id', () => {
+            const {container} = renderWithIntl(getComponent({extraMenuSlotId: 'host-menu'}));
+            const slot = container.querySelector('#host-menu');
+            expect(slot).toBeTruthy();
+            expect(slot.childElementCount).toBe(0);
+        });
+
+        test('renders no slot by default', () => {
+            const {container} = renderWithIntl(getComponent());
+            expect(container.querySelector('[id="host-menu"]')).toBeFalsy();
+        });
+    });
 });

@@ -8,7 +8,7 @@ import {spriteShape} from '../lib/assets-prop-types.js';
 import VM from '@scratch/scratch-vm';
 import mergeDynamicAssets from '../lib/merge-dynamic-assets.js';
 
-import spriteLibraryContent from '../lib/libraries/sprites.json';
+import {spriteLibraryContent} from '../lib/libraries/library-content.js';
 import randomizeSpritePosition from '../lib/randomize-sprite-position';
 import spriteTags from '../lib/libraries/sprite-tags';
 

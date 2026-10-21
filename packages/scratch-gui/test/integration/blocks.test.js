@@ -47,8 +47,8 @@ describe('Working with the blocks', () => {
     test('Switching sprites updates the block menus', async () => {
         await loadUri(uri);
         await clickBlocksCategory('Sound');
-        // "Meow" sound block should be visible
-        await findByText('Meow', scope.blocksTab);
+        // "Ding" sound block should be visible
+        await findByText('Ding', scope.blocksTab);
         await clickText('Backdrops'); // Switch to the backdrop
         // Now "pop" sound block should be visible and motion blocks hidden
         await findByText('pop', scope.blocksTab);
@@ -180,7 +180,7 @@ describe('Working with the blocks', () => {
         await loadUri(uri);
         await clickText('Code');
         await clickBlocksCategory('Sound');
-        await clickText('Meow', scope.blocksTab); // Click "play sound <Meow> until done" block
+        await clickText('Ding', scope.blocksTab); // Click "play sound <Ding> until done" block
         await clickText('record'); // Click "record..." option in the block's sound menu
         // Access has been force denied, so close the alert that comes up
         await driver.sleep(1000); // getUserMedia requests are very slow to fail for some reason

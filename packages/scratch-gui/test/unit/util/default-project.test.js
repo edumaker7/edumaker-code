@@ -18,4 +18,10 @@ describe('defaultProject', () => {
             });
         });
     });
+
+    test('the sprite is named EduBot', () => {
+        const defaultProject = defaultProjectGenerator(message => message.defaultMessage);
+        const projectData = JSON.parse(defaultProject[0].data);
+        expect(projectData.targets.filter(target => !target.isStage).map(target => target.name)).toEqual(['EduBot']);
+    });
 });

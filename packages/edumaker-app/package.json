@@ -1,0 +1,37 @@
+{
+  "name": "@edumaker/edumaker-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EduMaker block coding: the Scratch-based editor with an EduMaker menu and story panel for lessons.",
+  "license": "AGPL-3.0-only",
+  "author": "EduMaker",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json && vite build",
+    "clean": "rimraf dist",
+    "dev": "vite",
+    "format": "prettier --write . && eslint --fix",
+    "lint": "eslint && prettier --check .",
+    "preview": "vite preview",
+    "test": "npm run lint && vitest run"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.0",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "eslint": "9.39.5",
+    "eslint-config-scratch": "14.1.89",
+    "globals": "16.5.0",
+    "jsdom": "26.1.0",
+    "prettier": "3.9.10",
+    "rimraf": "6.1.2",
+    "typescript": "5.9.3",
+    "vite": "npm:rolldown-vite@7.3.1",
+    "vitest": "4.1.12"
+  }
+}

@@ -73,6 +73,7 @@ packages/
 ├── scratch-render/         WebGL renderer for the stage
 ├── scratch-svg-renderer/   SVG asset processor
 ├── task-herder/            Async task scheduler with rate limiting
+├── edumaker-app/           EduMaker app: hosts the editor, adds the content menu and story panel
 └── scratch-media-lib-scripts/  Build scripts for media library assets
 scripts/                    Monorepo-level utility scripts
 ```
@@ -87,6 +88,7 @@ scripts/                    Monorepo-level utility scripts
 | `scratch-svg-renderer` | JavaScript | webpack | Tap |
 | `task-herder` | TypeScript | Vite | Vitest |
 | `scratch-media-lib-scripts` | JavaScript | — | Jest |
+| `edumaker-app` | TypeScript (React) | Vite | Vitest |
 
 `task-herder` represents the target stack for new packages (TypeScript + Vite + Vitest). The other packages
 reflect the legacy stack and are being migrated incrementally.
