@@ -146,6 +146,13 @@
     opacity: 0.5;
 }
 
+.extra-menu-slot {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+}
+
 .account-info-group {
     display: flex;
     flex-direction: row;

@@ -174,6 +174,9 @@ class MenuBar extends React.Component {
     componentWillUnmount () {
         document.removeEventListener('keydown', this.handleKeyPress);
     }
+    getLogo () {
+        return this.props.logo || getScratchLogo(this.props.platform);
+    }
     handleClickNew () {
         // if the project is dirty, and user owns the project, we will autosave.
         // but if they are not logged in and can't save, user should consider
@@ -235,7 +238,7 @@ class MenuBar extends React.Component {
             } else if (mode === '220022BC') {
                 document.getElementById('logo_img').src = prehistoricLogo;
             } else {
-                document.getElementById('logo_img').src = getScratchLogo(this.props.platform);
+                document.getElementById('logo_img').src = this.getLogo();
             }
 
             this.props.onSetTimeTravelMode(mode);
@@ -334,12 +337,12 @@ class MenuBar extends React.Component {
                         >
                             <img
                                 id="logo_img"
-                                alt="Scratch"
+                                alt={this.props.logoAlt}
                                 className={classNames(styles.scratchLogo, {
                                     [styles.clickable]: typeof this.props.onClickLogo !== 'undefined'
                                 })}
                                 draggable={false}
-                                src={getScratchLogo(this.props.platform)}
+                                src={this.getLogo()}
                             />
                         </button>
                         {(this.props.canChangeColorMode || this.props.canChangeLanguage || this.props.canChangeTheme) &&
@@ -487,6 +490,13 @@ class MenuBar extends React.Component {
                         </button>
                     </div>
                 </div>
+
+                {this.props.extraMenuSlotId && (
+                    <div
+                        className={styles.extraMenuSlot}
+                        id={this.props.extraMenuSlotId}
+                    />
+                )}
 
                 {/* show the proper UI in the account menu, given whether the user is
                 logged in, and whether a session is available to log in with */}
@@ -665,12 +675,14 @@ MenuBar.propTypes = {
     intl: intlShape,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
+    extraMenuSlotId: PropTypes.string,
     isShowingProject: PropTypes.bool,
     isTotallyNormal: PropTypes.bool,
     isUpdating: PropTypes.bool,
     locale: PropTypes.string.isRequired,
     loginMenuOpen: PropTypes.bool,
     logo: PropTypes.string,
+    logoAlt: PropTypes.string,
     mode1920: PropTypes.bool,
     mode1990: PropTypes.bool,
     mode2020: PropTypes.bool,
@@ -718,7 +730,7 @@ MenuBar.propTypes = {
 };
 
 MenuBar.defaultProps = {
-    logo: scratchLogo,
+    logoAlt: 'Scratch',
     onShare: () => {}
 };
 
