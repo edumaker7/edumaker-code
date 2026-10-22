@@ -193,3 +193,40 @@ export const parseCatalog = (value: unknown): Catalog => {
   })
   return { lessons: uniqueIds(lessons, 'catalog.lessons') }
 }
+
+/**
+ * A lesson as stored in Firestore (`blocksLessons/{lessonId}`): its catalog fields and the lesson itself.
+ * The publishing script writes these from the content repository; the app reads them for a class.
+ */
+export interface LessonDocument {
+  entry: CatalogEntry
+  /** Position in the content menu, smaller first. */
+  order: number
+  lesson: Lesson
+}
+
+/**
+ * Checks a lesson document read from Firestore.
+ * @param value - The document data.
+ * @param id - The document id, which must match the lesson id.
+ * @returns The catalog entry (with the id as its path), menu order and lesson.
+ */
+export const parseLessonDocument = (value: unknown, id: string): LessonDocument => {
+  const raw = asObject(value, `blocksLessons/${id}`)
+  checkVersion(raw, `blocksLessons/${id}`)
+  const lesson = parseLesson(raw.lesson)
+  if (lesson.id !== id) fail(`blocksLessons/${id}.lesson.id`, `expected "${id}", got "${lesson.id}"`)
+  const order = raw.order ?? 0
+  if (typeof order !== 'number' || !Number.isFinite(order)) fail(`blocksLessons/${id}.order`, 'expected a number')
+  return {
+    entry: {
+      id,
+      title: asString(raw.title, `blocksLessons/${id}.title`),
+      category: asString(raw.category, `blocksLessons/${id}.category`),
+      summary: optionalString(raw.summary, `blocksLessons/${id}.summary`),
+      path: id,
+    },
+    order: order as number,
+    lesson,
+  }
+}

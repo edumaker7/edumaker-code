@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ContentFormatError, parseCatalog, parseLesson } from '../src/content/format'
+import { ContentFormatError, parseCatalog, parseLesson, parseLessonDocument } from '../src/content/format'
 
 const minimalLesson = {
   formatVersion: 1,
@@ -86,6 +86,21 @@ describe('parseCatalog', () => {
   it('rejects duplicate ids', () => {
     const entry = { id: 'a', title: 'A', category: 'C', path: 'a.json' }
     expect(() => parseCatalog({ formatVersion: 1, lessons: [entry, entry] })).toThrow('duplicate id "a"')
+  })
+})
+
+describe('parseLessonDocument', () => {
+  const document = { formatVersion: 1, title: 'A', category: 'C', order: 3, lesson: { ...minimalLesson } }
+
+  it('reads the catalog fields and the lesson', () => {
+    const parsed = parseLessonDocument(document, 'lesson')
+    expect(parsed.entry).toEqual({ id: 'lesson', title: 'A', category: 'C', summary: undefined, path: 'lesson' })
+    expect(parsed.order).toBe(3)
+    expect(parsed.lesson.id).toBe('lesson')
+  })
+
+  it('needs the lesson id to match the document id', () => {
+    expect(() => parseLessonDocument(document, 'other')).toThrow('lesson.id')
   })
 })
 

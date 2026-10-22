@@ -1,19 +1,35 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { ClassLoginError, createClassSource, type ClassBackend, type ClassLoginErrorCode } from '../class/classSource'
+import { rememberClassPassword, type ClassRoute } from '../class/route'
 import { findFailedCheck, summarizeTargets } from '../content/checks'
 import type { Catalog, CatalogEntry, PanelSide } from '../content/format'
-import { loadCatalog, loadLesson, resolveLessonUrl, type LoadedLesson } from '../content/loader'
+import type { ContentSource, LoadedLesson } from '../content/source'
 import { loadEditorBundle, mountEditor, type EditorHandle } from '../editor/scratch-editor'
 import { useElementById } from '../editor/useElementById'
 import { messages } from '../messages'
 import { AboutDialog } from './AboutDialog'
 import styles from './App.module.css'
+import { ClassGate } from './ClassGate'
 import { ContentMenu } from './ContentMenu'
 import { StoryPanel, type CheckOutcome } from './StoryPanel'
 
 export const MENU_SLOT_ID = 'em-menu'
 
-export type CatalogState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; catalog: Catalog }
+export type CatalogState =
+  /** No lessons to offer: the app is used without a class link and without sample lessons. */
+  | { status: 'none' }
+  | { status: 'loading' }
+  | { status: 'error' }
+  /** `title` is set for a class's lessons. */
+  | { status: 'ready'; catalog: Catalog; title?: string }
+
+interface ClassGateState {
+  checking: boolean
+  error?: ClassLoginErrorCode
+  /** The dialog stays up while a typed password is checked; the link's own password is checked without it. */
+  shown?: boolean
+}
 
 interface OpenLesson {
   loaded: LoadedLesson
@@ -22,17 +38,31 @@ interface OpenLesson {
 }
 
 export interface AppProps {
-  contentBaseUrl: URL
+  /** Lessons offered without a class link (the bundled samples), or null for none. */
+  sampleSource: ContentSource | null
+  /** The class link the app was opened with. */
+  classRoute: ClassRoute | null
+  /** Loads the Firebase connection; only called for class links. */
+  loadClassBackend: () => Promise<ClassBackend>
   fetcher?: typeof fetch
+  sessionStorage?: Storage
 }
 
 const editorLocale = (): string => new URLSearchParams(window.location.search).get('locale') ?? 'ko'
 
-export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
+export const App = ({
+  sampleSource,
+  classRoute,
+  loadClassBackend,
+  fetcher = fetch,
+  sessionStorage = window.sessionStorage,
+}: AppProps) => {
   const [editorHost, setEditorHost] = useState<HTMLDivElement | null>(null)
   const editorRef = useRef<EditorHandle | null>(null)
   const [editorError, setEditorError] = useState(false)
-  const [catalog, setCatalog] = useState<CatalogState>({ status: 'loading' })
+  const [source, setSource] = useState<ContentSource | null>(classRoute ? null : sampleSource)
+  const [classGate, setClassGate] = useState<ClassGateState | null>(classRoute ? { checking: true } : null)
+  const [loadedCatalog, setLoadedCatalog] = useState<{ source: ContentSource; state: CatalogState } | null>(null)
   const [lesson, setLesson] = useState<OpenLesson | null>(null)
   const [alert, setAlert] = useState<string | null>(null)
   const [aboutOpen, setAboutOpen] = useState(false)
@@ -63,25 +93,62 @@ export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
     }
   }, [editorHost])
 
+  // Signs in to the class and reports the outcome to the screen; `firstTry` is the attempt with the link's password.
+  const tryClass = useCallback(
+    (route: ClassRoute, firstTry: boolean): Promise<void> =>
+      loadClassBackend()
+        .then(async (backend) => {
+          const info = await backend.login(route.classId, route.password)
+          rememberClassPassword(sessionStorage, route)
+          const classSource = createClassSource(backend, info)
+          setSource({ ...classSource, title: classSource.title ?? messages.classDefaultTitle })
+          setClassGate(null)
+        })
+        .catch((error: unknown) => {
+          const code = error instanceof ClassLoginError ? error.code : 'unknown'
+          if (code === 'unknown') console.error(error)
+          // A link without a password is not an error yet: ask for it.
+          const askQuietly =
+            firstTry && route.password === '' && (code === 'wrong-password' || code === 'no-password')
+          setClassGate({ checking: false, error: askQuietly ? undefined : code, shown: true })
+        }),
+    [loadClassBackend, sessionStorage],
+  )
+
   useEffect(() => {
+    if (classRoute) void tryClass(classRoute, true)
+  }, [classRoute, tryClass])
+
+  useEffect(() => {
+    if (!source) return
     let cancelled = false
-    loadCatalog(contentBaseUrl, fetcher)
-      .then((loaded) => !cancelled && setCatalog({ status: 'ready', catalog: loaded }))
+    source
+      .loadCatalog()
+      .then((loaded) => {
+        if (!cancelled) setLoadedCatalog({ source, state: { status: 'ready', catalog: loaded, title: source.title } })
+      })
       .catch((error: unknown) => {
         console.error(error)
-        if (!cancelled) setCatalog({ status: 'error' })
+        if (!cancelled) setLoadedCatalog({ source, state: { status: 'error' } })
       })
     return () => {
       cancelled = true
     }
-  }, [contentBaseUrl, fetcher])
+  }, [source])
+
+  const catalog: CatalogState = !source
+    ? { status: 'none' }
+    : loadedCatalog?.source === source
+      ? loadedCatalog.state
+      : { status: 'loading' }
 
   const openLesson = useCallback(
     async (entry: CatalogEntry) => {
+      if (!source) return
       setAlert(null)
       let loaded: LoadedLesson
       try {
-        loaded = await loadLesson(contentBaseUrl, entry, fetcher)
+        loaded = await source.loadLesson(entry)
       } catch (error) {
         console.error(error)
         setAlert(messages.lessonError)
@@ -92,7 +159,7 @@ export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
       const editor = editorRef.current
       if (!starterProject || !editor) return
       try {
-        const response = await fetcher(resolveLessonUrl(loaded, starterProject))
+        const response = await fetcher(starterProject)
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         await editor.getVm().loadProject(await response.arrayBuffer())
       } catch (error) {
@@ -100,7 +167,7 @@ export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
         setAlert(messages.starterProjectError)
       }
     },
-    [contentBaseUrl, fetcher],
+    [source, fetcher],
   )
 
   const checkStep = useCallback((): CheckOutcome => {
@@ -167,6 +234,20 @@ export const App = ({ contentBaseUrl, fetcher = fetch }: AppProps) => {
           menuSlot,
         )}
       {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
+      {classRoute && classGate?.shown && (
+        <ClassGate
+          checking={classGate.checking}
+          error={classGate.error}
+          onEnter={(password) => {
+            setClassGate({ checking: true, shown: true })
+            void tryClass({ classId: classRoute.classId, password }, false)
+          }}
+          onSkip={() => {
+            setClassGate(null)
+            setSource(sampleSource)
+          }}
+        />
+      )}
     </div>
   )
 }

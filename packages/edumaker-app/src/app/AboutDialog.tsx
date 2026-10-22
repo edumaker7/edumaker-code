@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { messages } from '../messages'
 import styles from './AboutDialog.module.css'
 
-export const SOURCE_CODE_URL = import.meta.env.VITE_SOURCE_CODE_URL ?? 'https://github.com/edumaker7/edumaker-editor'
+export const SOURCE_CODE_URL = import.meta.env.VITE_SOURCE_CODE_URL ?? 'https://github.com/edumaker7/edumaker-code'
 
 export interface AboutDialogProps {
   onClose: () => void

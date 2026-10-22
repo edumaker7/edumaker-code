@@ -4,14 +4,18 @@ import { StoryPanel, type StoryPanelProps } from '../src/app/StoryPanel'
 import { parseLesson } from '../src/content/format'
 
 const loaded = {
-  url: new URL('https://example.test/contents/lesson.json'),
   lesson: parseLesson({
     formatVersion: 1,
     id: 'lesson',
     title: '수업',
     subtitle: '부제목',
     steps: [
-      { id: 'intro', title: '시작', body: ['첫 문단', '둘째 문단'], image: 'images/intro.png' },
+      {
+        id: 'intro',
+        title: '시작',
+        body: ['첫 문단', '둘째 문단'],
+        image: 'https://example.test/contents/images/intro.png',
+      },
       {
         id: 'mission',
         title: '미션 단계',
