@@ -39,9 +39,12 @@ export const ContentMenu = ({ catalog, onOpenLesson, onOpenAbout }: ContentMenuP
   }, [open])
 
   const renderMenu = () => {
+    if (catalog.status === 'none') return <p className={styles.note}>{messages.noClassContents}</p>
     if (catalog.status === 'loading') return <p className={styles.note}>{messages.contentsLoading}</p>
     if (catalog.status === 'error') return <p className={styles.note}>{messages.contentsError}</p>
-    if (catalog.catalog.lessons.length === 0) return <p className={styles.note}>{messages.noContents}</p>
+    if (catalog.catalog.lessons.length === 0) {
+      return <p className={styles.note}>{catalog.title ? messages.classNoLessons : messages.noContents}</p>
+    }
     return groupByCategory(catalog.catalog.lessons).map(([category, entries]) => (
       <section key={category} className={styles.group}>
         <h2 className={styles.category}>{category}</h2>
@@ -79,6 +82,7 @@ export const ContentMenu = ({ catalog, onOpenLesson, onOpenAbout }: ContentMenuP
       </button>
       {open && (
         <div className={styles.dropdown} role="region" aria-label={messages.contents}>
+          {catalog.status === 'ready' && catalog.title && <p className={styles.menuTitle}>{catalog.title}</p>}
           {renderMenu()}
         </div>
       )}

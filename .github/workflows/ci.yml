@@ -126,3 +126,59 @@ jobs:
       # that way each branch can be updated or cleaned up independently
       destination_dir: ${{ github.head_ref || github.ref_name }}
       full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
+
+  deploy:
+    name: Deploy code.edumaker.kr
+    needs: [build, test]
+    # Only develop is the live site. The job skips itself until the repository has the FIREBASE_SERVICE_ACCOUNT
+    # secret and the FIREBASE_HOSTING_SITE variable (the Firebase Hosting site id for code.edumaker.kr).
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' && needs.build.outputs.any-workspace == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      FIREBASE_HOSTING_SITE: ${{ vars.FIREBASE_HOSTING_SITE }}
+    steps:
+      - name: Check deploy settings
+        id: settings
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ] || [ -z "$FIREBASE_HOSTING_SITE" ]; then
+            echo "FIREBASE_SERVICE_ACCOUNT secret or FIREBASE_HOSTING_SITE variable is not set; skipping the deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: ${{ steps.settings.outputs.ready == 'true' }}
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - if: ${{ steps.settings.outputs.ready == 'true' }}
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - if: ${{ steps.settings.outputs.ready == 'true' }}
+        uses: ./.github/actions/install-dependencies
+      - if: ${{ steps.settings.outputs.ready == 'true' }}
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: build
+          path: packages
+      # The live site offers class lessons only, so it is built without the bundled sample lessons.
+      - name: Build the app without sample lessons
+        if: ${{ steps.settings.outputs.ready == 'true' }}
+        working-directory: packages/edumaker-app
+        env:
+          VITE_SAMPLE_CONTENTS: 'false'
+        run: |
+          npx rimraf dist
+          npx vite build
+          rm -rf dist/contents
+      - name: Deploy to Firebase Hosting
+        if: ${{ steps.settings.outputs.ready == 'true' }}
+        working-directory: packages/edumaker-app
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-service-account.json"
+          npx --yes firebase-tools@15.32.1 target:apply hosting code "$FIREBASE_HOSTING_SITE" --project edumaker-gallery
+          npx --yes firebase-tools@15.32.1 deploy --only hosting:code --project edumaker-gallery --non-interactive
+          rm -f "$RUNNER_TEMP/firebase-service-account.json"

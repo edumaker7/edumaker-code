@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { PanelSide } from '../content/format'
-import { resolveLessonUrl, type LoadedLesson } from '../content/loader'
+import type { LoadedLesson } from '../content/source'
 import { messages } from '../messages'
 import styles from './StoryPanel.module.css'
 
@@ -73,7 +73,7 @@ export const StoryPanel = ({
             {paragraph}
           </p>
         ))}
-        {step.image && <img className={styles.image} src={resolveLessonUrl(loaded, step.image)} alt="" />}
+        {step.image && <img className={styles.image} src={step.image} alt="" />}
 
         {step.mission && (
           <section className={styles.mission}>

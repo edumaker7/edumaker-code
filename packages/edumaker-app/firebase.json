@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "target": "code",
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*"],
+    "headers": [
+      {
+        "source": "/@(index.html|scratch-gui-standalone.js|extension-worker.js)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      },
+      {
+        "source": "/@(assets|chunks|static)/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      }
+    ]
+  }
+}

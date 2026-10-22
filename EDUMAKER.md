@@ -19,8 +19,13 @@ Keep these small so upstream updates merge easily.
 
 - `packages/edumaker-app`: the app users see. See its README for running it and for the lesson content format.
 
+The app joins the hub's classes (shared Firebase project `edumaker-gallery`): a class link
+`https://code.edumaker.kr/#class/{classId}?pw=…` signs in through the hub's `classLogin` function and shows the lessons
+the admin opened for that class (`classes/{classId}.blocksLessons`), read from Firestore `blocksLessons` and Storage
+`blocks/lessons/`. The Firestore and Storage rules for these live in the hub repository.
+
 Lesson content is data, not code. Only a public test sample lives here (`packages/edumaker-app/public/contents`);
-real lessons are kept in a separate private repository and served from `VITE_CONTENT_BASE_URL`.
+real lessons are kept in the private repository `edumaker-contents`, which publishes them to Firestore and Storage.
 
 ## GitHub Actions
 
@@ -32,6 +37,8 @@ Workflows meant for the Scratch organization (npm publishing, translation sync, 
 
 With GitHub Pages set to deploy from the `gh-pages` branch, the app is at
 `https://<owner>.github.io/<repo>/<branch folder>/`.
+- `ci.yml` also deploys `develop` to Firebase Hosting (`code.edumaker.kr`) once the `FIREBASE_SERVICE_ACCOUNT` secret and
+  the `FIREBASE_HOSTING_SITE` variable are set.
 
 ## Open items
 
